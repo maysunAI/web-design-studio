@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="zh" data-theme="t01" data-bg="none">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>做图工作台</title>
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/themes.css">
+<link rel="stylesheet" href="css/bgs.css">
+<link rel="stylesheet" href="css/layout.css">
+<style>
+ body{overflow-x:hidden}
+ .bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:5px var(--gap);background:var(--surface);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+ .bar b{font-size:1.05rem}.bar .sp{flex:1}
+ .bar select,.bar .btn{min-height:30px;padding-top:0;padding-bottom:0;font-size:.85rem}.bar label{display:flex;align-items:center;gap:4px;font-size:.82rem}
+ select,input[type=text],input[type=password],textarea{min-height:30px;font:inherit;font-size:16px;background:var(--bg);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:3px 8px;width:100%}
+ .ws2{display:grid;grid-template-columns:250px minmax(0,1fr) 290px;gap:10px;padding:8px var(--gap);align-items:stretch;height:calc(100vh - 44px)}.ws2>.pn,.ws2>.stagebox{overflow:auto;max-height:100%}
+ .pn{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:10px;display:grid;gap:7px;min-width:0}
+ .pn h3{margin:0;font-size:.85rem;color:var(--muted);letter-spacing:.06em}
+ .tools{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+ .tool{display:grid;place-items:center;gap:2px;min-height:46px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--text);cursor:pointer;font-size:.78rem}
+ .tool:hover{border-color:var(--brand);background:var(--surface-2)}.tool i{font-style:normal;font-size:1.2rem;line-height:1}
+ .emo{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px}.emo button{border:0;background:var(--bg);border-radius:8px;font-size:1.15rem;min-height:30px;cursor:pointer}.emo button:hover{background:var(--surface-2)}
+ .stagebox{background:repeating-conic-gradient(var(--surface-2) 0 25%,var(--bg) 0 50%) 0 0/20px 20px;border:1px solid var(--line);border-radius:var(--radius);padding:12px;display:grid;place-items:center;min-width:0}
+ #cv{width:100%;height:auto;max-height:calc(100vh - 80px);display:block;touch-action:none;background:#fff;box-shadow:var(--shadow);border-radius:6px}
+ .f{display:grid;gap:3px;font-size:.82rem;color:var(--muted)}.f input[type=range]{width:100%}.f input[type=color]{width:100%;min-width:0;height:28px;border:1px solid var(--line);border-radius:8px;background:none;padding:2px}
+ .two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}
+ .layers{display:grid;gap:4px;max-height:200px;overflow:auto}
+ .ly{display:flex;align-items:center;gap:6px;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);cursor:pointer;font-size:.85rem;min-width:0}.ly.on{border-color:var(--brand);background:var(--surface-2)}.ly span{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+ .hint{font-size:.82rem;color:var(--muted)}
+ .row{display:flex;gap:6px;flex-wrap:wrap}.row .btn{min-height:30px;padding:0 10px;font-size:.82rem}
+ .pre{display:flex;gap:6px;flex-wrap:wrap}.pre .btn{min-height:30px;padding:0 10px;font-size:.82rem}
+ @media(max-width:1100px){.ws2{height:auto}.ws2>.pn,.ws2>.stagebox{max-height:none}.ws2{grid-template-columns:200px minmax(0,1fr)}.ws2 #props{grid-column:1/-1}}
+ @media(max-width:760px){.ws2{grid-template-columns:minmax(0,1fr)}}
+</style>
+</head>
+<body data-no-switcher>
+<div class="bar">
+ <a class="btn" href="index.html">← 设计库</a><b>做图工作台</b>
+ <span class="sp"></span><label class="muted">画布 <select id="size" style="width:auto"><option value="1920x1080">背景 1920×1080</option><option value="1200x630">社交分享图 1200×630</option><option value="1080x1080">方图 1080×1080</option><option value="1080x1920">手机竖图 1080×1920</option><option value="1600x500">网页横幅 1600×500</option></select></label>
+ <label class="muted" title="用某个主题的配色给当前画布换色（背景和图形颜色），不改工作台界面">画布配色 <select id="uiTheme" style="width:auto"></select></label>
+ <button class="btn" id="undo">↶ 撤销</button><button class="btn primary" id="svg">下载 SVG</button><button class="btn" id="png">下载 PNG</button><button class="btn" id="css">复制 CSS</button>
+</div>
+<div class="ws2">
+ <section class="pn" aria-label="素材">
+  <h3>快速开始（点一个套用）</h3>
+  <div class="pre"><button class="btn" data-pre="meet">📹 会议封面</button><button class="btn" data-pre="study">🌱 学习海报</button><button class="btn" data-pre="banner">📣 产品横幅</button><button class="btn" data-pre="quote">❝ 金句图</button></div>
+  <h3>形状（点一下加入）</h3>
+  <div class="tools"><button class="tool" data-add="circle"><i>●</i>圆</button><button class="tool" data-add="rect"><i>▬</i>方</button><button class="tool" data-add="blob"><i>☁</i>色块</button><button class="tool" data-add="tri"><i>▲</i>三角</button><button class="tool" data-add="star"><i>★</i>星</button><button class="tool" data-add="wave"><i>〰</i>波浪</button><button class="tool" data-add="text"><i>T</i>文字</button><button class="tool" id="addImg"><i>🖼</i>我的图片</button><button class="tool" data-add="line"><i>╱</i>线</button></div>
+  <input type="file" id="file" accept="image/*" hidden>
+  <h3>表情图标（点一下加入）</h3>
+  <div class="emo" id="emo"></div>
+  <h3>背景</h3>
+  <div class="two"><label class="f">底色<input type="color" id="b1" value="#f4f7fb"></label><label class="f">渐变到<input type="color" id="b2" value="#dbe9ff"></label></div>
+  <label class="f"><span><input type="checkbox" id="grad" checked> 使用渐变</span></label>
+  <div class="row"><button class="btn" id="rnd">🎲 随机配色</button><button class="btn" id="clr">清空</button></div>
+ </section>
+ <section class="stagebox"><svg id="cv" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg" aria-label="画布，可拖动"></svg></section>
+ <section class="pn" id="props" aria-label="属性">
+  <h3>当前选择</h3>
+  <div class="hint" id="nosel">点画布上的东西即可编辑</div>
+  <div id="pf" hidden style="display:grid;gap:6px">
+   <label class="f" id="tbox">文字内容<textarea id="ftx" rows="2"></textarea></label>
+   <div class="two"><label class="f">颜色<input type="color" id="fc"></label><label class="f">透明度<input type="range" id="fo" min="5" max="100"></label></div>
+   <div class="two"><label class="f">大小<input type="range" id="fs" min="20" max="1400"></label><label class="f">旋转<input type="range" id="fr" min="-180" max="180"></label></div>
+   <div class="two"><label class="f">模糊（柔光）<input type="range" id="fb" min="0" max="150"></label><label class="f" id="wbox">粗细<input type="range" id="fw" min="300" max="900" step="100"></label></div>
+   <div class="row"><button class="btn" id="dup">复制</button><button class="btn" id="del">删除</button><button class="btn" id="up">上移</button><button class="btn" id="dn">下移</button></div>
+  </div>
+  <h3>图层</h3><div class="layers" id="layers"></div>
+  <details id="srv" open><summary class="hint" style="cursor:pointer">登录后用服务器 AI（不用自己的 Key）</summary>
+   <div id="lgOut" style="display:grid;gap:6px;margin-top:6px"><input type="text" id="lgU" placeholder="用户名" autocomplete="username"><input type="password" id="lgP" placeholder="密码" autocomplete="current-password"><button class="btn" id="lgGo">登录</button></div>
+   <div id="lgIn" style="display:none;gap:6px;margin-top:6px"><div class="hint" id="lgWho"></div><input type="text" id="srvAsk" placeholder="例：视频会议网站，办公室感觉"><div class="row"><button class="btn" id="srvPal">AI 配色</button><button class="btn" id="srvCopy">AI 写 3 条标题</button><button class="btn" id="lgOutB">退出</button></div></div>
+  </details>
+  <details><summary class="hint" style="cursor:pointer">AI 帮我配色（自带 Key，未实测）</summary>
+   <div class="hint" style="margin:6px 0">Key 只存在你这个浏览器里，只发给 api.anthropic.com。</div>
+   <input type="password" id="key" placeholder="sk-ant-…" autocomplete="off" style="margin-bottom:6px"><input type="text" id="ask" placeholder="例：视频会议网站，办公室感觉" style="margin-bottom:6px"><button class="btn" id="ai">推荐 3 种颜色</button></details>
+  <div class="hint" id="msg">&nbsp;</div>
+ </section>
+</div>
+<script src="js/catalog.js"></script>
+<script>
+(function(){
+  var NS='http://www.w3.org/2000/svg',cv=document.getElementById('cv'),$=function(i){return document.getElementById(i)};
+  var W=1920,H=1080,items=[],sel=null,drag=null,uid=0,hist=[];
+  function rnd(a,b){return a+Math.random()*(b-a)}
+  function hxc(c){var d=document.createElement('canvas').getContext('2d');d.fillStyle=c;return d.fillStyle}
+  function esc(s){return String(s).replace(/[&<>]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c]})}
+  /* 界面主题 */
+  var us=$('uiTheme');(window.PJ116?PJ116.themes:[]).forEach(function(t){var o=document.createElement('option');o.value=t.id;o.textContent=(t.n<10?'0':'')+t.n+' '+t.name;us.appendChild(o)});
+  var tprobe=document.createElement('div');tprobe.style.display='none';document.body.appendChild(tprobe);
+  function tv(n,k){return getComputedStyle(tprobe).getPropertyValue(k).trim()}
+  us.insertBefore(new Option('— 选一个主题给画布换色 —',''),us.firstChild);us.value='';
+  us.onchange=function(){if(!us.value)return;push();tprobe.dataset.theme=us.value;
+    var bg=hxc(tv(0,'--bg')),b2=hxc(tv(0,'--hero-from')),br=hxc(tv(0,'--brand')),ac=hxc(tv(0,'--accent')),tx=hxc(tv(0,'--text'));
+    $('b1').value=bg;$('b2').value=b2;$('grad').checked=true;
+    var cols=[br,ac,br,ac];var i=0;items.forEach(function(s){if(s.type==='text'||s.type==='emoji'||s.type==='img')return;s.color=cols[i++%4]});
+    items.forEach(function(s){if(s.type==='text'){var c=hxc(s.color);if(c===hxc('#14233a')||true){s.color=tx}}});
+    render();us.value=''};
+  /* 表情 */
+  '😀 😍 🤔 👍 🎉 🔥 ⭐ ❤️ 💡 📹 🎧 🎵 📚 ✏️ 🚀 🌱 🌈 ☀️ 🌙 ☕ 🏠 💼 📈 🔒 🌐 💬 📷 🎯'.split(' ').forEach(function(e){var b=document.createElement('button');b.textContent=e;b.onclick=function(){push();sel=mk('emoji',{emoji:e,size:200,x:rnd(500,W-500),y:rnd(300,H-300)});render()};$('emo').appendChild(b)});
+  function mk(type,o){o=o||{};var s={id:++uid,type:type,x:o.x!=null?o.x:W/2,y:o.y!=null?o.y:H/2,size:o.size||Math.round(W/7),rot:o.rot||0,color:o.color||'#1f6feb',op:o.op||(type==='text'||type==='emoji'||type==='img'?100:60),blur:o.blur||0,seed:Math.random(),text:o.text||'双击改文字',fw:o.fw||800,emoji:o.emoji,img:o.img,ar:o.ar||1};items.push(s);return s}
+  function push(){hist.push(JSON.stringify({items:items,b:[$('b1').value,$('b2').value,$('grad').checked],W:W,H:H}));if(hist.length>40)hist.shift()}
+  $('undo').onclick=function(){var h=hist.pop();if(!h)return;var o=JSON.parse(h);items=o.items;$('b1').value=o.b[0];$('b2').value=o.b[1];$('grad').checked=o.b[2];W=o.W;H=o.H;sel=null;$('size').value=W+'x'+H;render()};
+  function blobPath(s){var r=s.size/2,p=[],n=8;for(var i=0;i<n;i++){var a=i/n*6.283,rr=r*(0.75+0.35*Math.abs(Math.sin(s.seed*100+i*2.1)));p.push([rr*Math.cos(a),rr*Math.sin(a)])}
+    var d='M'+p[0][0].toFixed(0)+' '+p[0][1].toFixed(0);for(i=0;i<n;i++){var q=p[i],nx=p[(i+1)%n];d+=' Q'+q[0].toFixed(0)+' '+q[1].toFixed(0)+' '+((q[0]+nx[0])/2).toFixed(0)+' '+((q[1]+nx[1])/2).toFixed(0)}return d+'Z'}
+  function inner(s){var f=' fill="'+s.color+'"',h=s.size/2;
+    if(s.type==='circle')return '<circle r="'+h+'"'+f+'/>';
+    if(s.type==='rect')return '<rect x="'+-h+'" y="'+-s.size/3+'" width="'+s.size+'" height="'+s.size*2/3+'" rx="22"'+f+'/>';
+    if(s.type==='tri')return '<polygon points="0,'+-h+' '+h+','+h+' '+-h+','+h+'"'+f+'/>';
+    if(s.type==='star'){var p=[];for(var i=0;i<10;i++){var r=i%2?h*.45:h,a=-1.5708+i*.6283;p.push((r*Math.cos(a)).toFixed(1)+','+(r*Math.sin(a)).toFixed(1))}return '<polygon points="'+p.join(' ')+'"'+f+'/>'}
+    if(s.type==='line')return '<rect x="'+-s.size+'" y="-4" width="'+s.size*2+'" height="8" rx="4"'+f+'/>';
+    if(s.type==='wave'){var w=s.size*2,d='M'+-w/2+' 0';for(var i=0;i<=8;i++)d+=' L'+(-w/2+i*w/8)+' '+(Math.sin(i*1.2+s.seed*6)*s.size/6);d+=' L'+w/2+' '+s.size+' L'+-w/2+' '+s.size+'Z';return '<path d="'+d+'"'+f+'/>'}
+    if(s.type==='blob')return '<path d="'+blobPath(s)+'"'+f+'/>';
+    if(s.type==='text'){var lines=String(s.text).split('\n'),fs=s.size/3.2,y0=-(lines.length-1)*fs*.6;return '<text text-anchor="middle" dominant-baseline="central" font-family="system-ui,\'Microsoft YaHei\',\'Hiragino Sans\',sans-serif" font-weight="'+s.fw+'" font-size="'+fs+'"'+f+'>'+lines.map(function(l,i){return '<tspan x="0" y="'+(y0+i*fs*1.2)+'">'+esc(l)+'</tspan>'}).join('')+'</text>'}
+    if(s.type==='emoji')return '<text text-anchor="middle" dominant-baseline="central" font-size="'+s.size+'">'+s.emoji+'</text>';
+    if(s.type==='img'){var w=s.size*2,hh=w/s.ar;return '<image href="'+s.img+'" x="'+-w/2+'" y="'+-hh/2+'" width="'+w+'" height="'+hh+'" preserveAspectRatio="xMidYMid meet"/>'}
+    return ''}
+  function render(exp){
+    var defs='<defs><linearGradient id="bgG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="'+$('b1').value+'"/><stop offset="1" stop-color="'+$('b2').value+'"/></linearGradient>';
+    items.forEach(function(s){if(s.blur)defs+='<filter id="bl'+s.id+'" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="'+s.blur+'"/></filter>'});defs+='</defs>';
+    var b=defs+'<rect width="'+W+'" height="'+H+'" fill="'+($('grad').checked?'url(#bgG)':$('b1').value)+'"/>';
+    items.forEach(function(s){b+='<g data-id="'+s.id+'" transform="translate('+s.x.toFixed(1)+' '+s.y.toFixed(1)+') rotate('+s.rot+')" opacity="'+s.op/100+'"'+(s.blur?' filter="url(#bl'+s.id+')"':'')+(exp?'':' style="cursor:grab"')+'>'+inner(s)+'</g>'});
+    cv.setAttribute('viewBox','0 0 '+W+' '+H);cv.innerHTML=b;
+    if(!exp&&sel){var g=cv.querySelector('g[data-id="'+sel.id+'"]');if(g){var bb=g.getBBox(),pad=12;
+      g.insertAdjacentHTML('beforeend','<rect x="'+(bb.x-pad)+'" y="'+(bb.y-pad)+'" width="'+(bb.width+2*pad)+'" height="'+(bb.height+2*pad)+'" fill="none" stroke="#2f80ed" stroke-width="3" stroke-dasharray="12 8" pointer-events="none"/><circle class="hdl" cx="'+(bb.x+bb.width+pad)+'" cy="'+(bb.y+bb.height+pad)+'" r="16" fill="#2f80ed" stroke="#fff" stroke-width="4" style="cursor:nwse-resize"/>')}}
+    side();
+  }
+  function side(){
+    var pf=$('pf');pf.style.display=sel?'grid':'none';$('nosel').style.display=sel?'none':'';
+    if(sel){$('fc').value=hxc(sel.color);$('fo').value=sel.op;$('fs').value=sel.size;$('fr').value=sel.rot;$('fb').value=sel.blur;$('fw').value=sel.fw;$('ftx').value=sel.text;
+      $('tbox').style.display=sel.type==='text'?'':'none';$('wbox').style.display=sel.type==='text'?'':'none'}
+    var L=$('layers');L.innerHTML='';items.slice().reverse().forEach(function(s){var d=document.createElement('div');d.className='ly'+(sel&&sel.id===s.id?' on':'');
+      var nm={circle:'● 圆',rect:'▬ 方',blob:'☁ 色块',tri:'▲ 三角',star:'★ 星',line:'╱ 线',wave:'〰 波浪',text:'T '+s.text.slice(0,12),emoji:s.emoji+' 图标',img:'🖼 图片'}[s.type];
+      d.innerHTML='<span>'+esc(nm)+'</span>';d.onclick=function(){sel=s;render()};L.appendChild(d)})}
+  function pt(e){var r=cv.getBoundingClientRect();return{x:(e.clientX-r.left)/r.width*W,y:(e.clientY-r.top)/r.height*H}}
+  cv.addEventListener('pointerdown',function(e){var p=pt(e);
+    if(e.target.classList&&e.target.classList.contains('hdl')&&sel){push();drag={mode:'size',s0:sel.size,d0:Math.hypot(p.x-sel.x,p.y-sel.y)||1};cv.setPointerCapture(e.pointerId);return}
+    var g=e.target.closest&&e.target.closest('g[data-id]');sel=g?items.filter(function(s){return s.id==g.dataset.id})[0]:null;
+    if(sel){push();drag={mode:'move',dx:sel.x-p.x,dy:sel.y-p.y};cv.setPointerCapture(e.pointerId)}render()});
+  cv.addEventListener('pointermove',function(e){if(!drag||!sel)return;var p=pt(e);if(drag.mode==='move'){sel.x=p.x+drag.dx;sel.y=p.y+drag.dy}else{sel.size=Math.max(20,drag.s0*Math.hypot(p.x-sel.x,p.y-sel.y)/drag.d0)}render()});
+  cv.addEventListener('pointerup',function(){drag=null});
+  cv.addEventListener('dblclick',function(e){if(sel&&sel.type==='text'){var t=prompt('文字内容（可换行用 \\n 无效，请在右侧输入框里换行）',sel.text);if(t!=null){push();sel.text=t;render()}}});
+  document.querySelectorAll('[data-add]').forEach(function(b){b.onclick=function(){push();var t=b.dataset.add;sel=mk(t,{x:rnd(W*.25,W*.75),y:rnd(H*.25,H*.75),color:t==='text'?'#14233a':undefined,size:t==='text'?Math.round(W/4):undefined});render()}});
+  $('addImg').onclick=function(){$('file').click()};
+  $('file').onchange=function(){var f=this.files[0];if(!f)return;var r=new FileReader();r.onload=function(){var im=new Image();im.onload=function(){push();sel=mk('img',{img:r.result,ar:im.width/im.height,size:Math.round(Math.min(W,H)/3)});render()};im.src=r.result};r.readAsDataURL(f);this.value=''};
+  [['fc','color'],['fo','op'],['fs','size'],['fr','rot'],['fb','blur'],['fw','fw'],['ftx','text']].forEach(function(p){$(p[0]).oninput=function(){if(sel){sel[p[1]]=(p[0]==='fc'||p[0]==='ftx')?this.value:+this.value;render()}};$(p[0]).onchange=function(){}});
+  ['b1','b2','grad'].forEach(function(i){$(i).oninput=function(){render()}});
+  $('del').onclick=function(){if(sel){push();items=items.filter(function(s){return s!==sel});sel=null;render()}};
+  $('dup').onclick=function(){if(sel){push();var c=JSON.parse(JSON.stringify(sel));c.id=++uid;c.x+=60;c.y+=60;items.push(c);sel=c;render()}};
+  $('up').onclick=function(){if(sel){var i=items.indexOf(sel);if(i<items.length-1){push();items.splice(i,1);items.splice(i+1,0,sel);render()}}};
+  $('dn').onclick=function(){if(sel){var i=items.indexOf(sel);if(i>0){push();items.splice(i,1);items.splice(i-1,0,sel);render()}}};
+  document.addEventListener('keydown',function(e){if(!sel||/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName))return;
+    if(e.key==='Delete'||e.key==='Backspace'){$('del').click();e.preventDefault()}
+    var d={ArrowLeft:[-10,0],ArrowRight:[10,0],ArrowUp:[0,-10],ArrowDown:[0,10]}[e.key];if(d){sel.x+=d[0];sel.y+=d[1];render();e.preventDefault()}});
+  $('clr').onclick=function(){push();items=[];sel=null;render()};
+  $('size').onchange=function(){push();var a=this.value.split('x');W=+a[0];H=+a[1];render()};
+  function palette(){var h=rnd(0,360);return{h:h,cols:[0,40,-40,80].map(function(d){return hxc('hsl('+((h+d+360)%360)+',70%,'+rnd(52,72)+'%)')}),b1:hxc('hsl('+h+',60%,96%)'),b2:hxc('hsl('+((h+30)%360)+',70%,90%)'),ink:hxc('hsl('+h+',45%,16%)')}}
+  function deco(P,n){var types=['circle','blob','blob','wave','tri','circle','star'];for(var i=0;i<n;i++)mk(types[i%7],{x:rnd(0,W),y:rnd(0,H),size:rnd(W/12,W/4),color:P.cols[i%4],op:rnd(25,55),blur:Math.random()<.4?rnd(30,80):0})}
+  $('rnd').onclick=function(){push();items=[];sel=null;var P=palette();$('b1').value=P.b1;$('b2').value=P.b2;$('grad').checked=true;deco(P,7);render()};
+  var PRE={
+   meet:function(P){mk('emoji',{emoji:'📹',x:W*.78,y:H*.45,size:H*.42});mk('text',{text:'一个链接，\n马上开会',x:W*.34,y:H*.4,size:W*.24,color:P.ink,fw:900});mk('text',{text:'无需安装 · 手机电脑都能用',x:W*.34,y:H*.72,size:W*.11,color:P.ink,fw:500,op:75})},
+   study:function(P){mk('emoji',{emoji:'🌱',x:W*.5,y:H*.26,size:H*.26});mk('text',{text:'每天一点点',x:W*.5,y:H*.52,size:W*.3,color:P.ink,fw:900});mk('text',{text:'连续学习 12 天',x:W*.5,y:H*.74,size:W*.16,color:P.ink,fw:500,op:75})},
+   banner:function(P){mk('text',{text:'新品上线',x:W*.3,y:H*.42,size:W*.3,color:P.ink,fw:900});mk('text',{text:'现在免费试用 →',x:W*.3,y:H*.74,size:W*.17,color:P.cols[0],fw:700});mk('emoji',{emoji:'🚀',x:W*.8,y:H*.5,size:H*.55})},
+   quote:function(P){mk('text',{text:'❝',x:W*.2,y:H*.2,size:W*.2,color:P.cols[0],fw:900});mk('text',{text:'人活一回，\n应该拼搏。',x:W*.5,y:H*.52,size:W*.4,color:P.ink,fw:800});mk('text',{text:'— 我',x:W*.78,y:H*.84,size:W*.14,color:P.ink,fw:400,op:70})}};
+  document.querySelectorAll('[data-pre]').forEach(function(b){b.onclick=function(){push();items=[];sel=null;var P=palette();$('b1').value=P.b1;$('b2').value=P.b2;$('grad').checked=true;deco(P,4);PRE[b.dataset.pre](P);render()}});
+  function svgText(){var s0=sel;sel=null;render(true);var t=new XMLSerializer().serializeToString(cv);sel=s0;render();return t.replace('<svg ','<svg width="'+W+'" height="'+H+'" ')}
+  function dl(name,blob){var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click()}
+  $('svg').onclick=function(){dl('my-image.svg',new Blob([svgText()],{type:'image/svg+xml'}))};
+  $('png').onclick=function(){var s=svgText(),img=new Image();img.onload=function(){var c=document.createElement('canvas');c.width=W;c.height=H;c.getContext('2d').drawImage(img,0,0,W,H);c.toBlob(function(b){dl('my-image.png',b)})};img.onerror=function(){$('msg').textContent='PNG 导出失败，请改用 SVG。'};img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(s)};
+  $('css').onclick=function(){var s='background:url("data:image/svg+xml;utf8,'+encodeURIComponent(svgText())+'") center/cover no-repeat;';try{navigator.clipboard.writeText(s);$('msg').textContent='已复制 CSS（'+Math.round(s.length/1024)+' KB）。'}catch(e){$('msg').textContent='复制失败，请用"下载 SVG"。'}};
+  try{$('key').value=localStorage.getItem('pj116-key')||''}catch(e){}
+  $('ai').onclick=async function(){var k=$('key').value.trim(),a=$('ask').value.trim();if(!k||!a){$('msg').textContent='请填 Key 和一句话描述。';return}
+    try{localStorage.setItem('pj116-key',k)}catch(e){}$('msg').textContent='AI 思考中…';
+    try{var r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'content-type':'application/json','x-api-key':k,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:300,messages:[{role:'user',content:'为这个网站推荐3个网页背景色(hex)，只输出JSON数组如["#aabbcc","#ddeeff","#112233"]，不要别的文字。网站：'+a}]})});
+      var j=await r.json();if(!r.ok)throw new Error(j.error&&j.error.message||r.status);var c=JSON.parse(j.content[0].text.match(/\[[^\]]+\]/)[0]);
+      $('b1').value=c[0];$('b2').value=c[1];if(sel)sel.color=c[2];render();$('msg').textContent='已套用 AI 推荐：'+c.join('、')}catch(e){$('msg').textContent='AI 失败：'+e.message}};
+  /* 登录 + 服务器 AI（req222）：登录成功后面板就地切换，不弹窗、不跳页 */
+  function who(u){$('lgOut').hidden=!!u;$('lgIn').hidden=!u;$('lgOut').style.display=u?'none':'grid';$('lgIn').style.display=u?'grid':'none';if(u)$('lgWho').textContent='已登录：'+u}
+  fetch('/api/me',{credentials:'same-origin'}).then(function(r){return r.json()}).then(function(j){who(j.user)}).catch(function(){});
+  $('lgGo').onclick=function(){$('msg').textContent='登录中…';fetch('/api/login',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({user:$('lgU').value,pass:$('lgP').value})}).then(function(r){return r.json().then(function(j){return[r.status,j]})}).then(function(a){if(a[0]===200){$('lgP').value='';who(a[1].user);$('msg').textContent='登录成功。'}else $('msg').textContent=a[1].error||'登录失败'}).catch(function(){$('msg').textContent='网络错误'})};
+  $('lgP').onkeydown=function(e){if(e.key==='Enter')$('lgGo').click()};
+  $('lgOutB').onclick=function(){fetch('/api/logout',{method:'POST'}).then(function(){who(null);$('msg').textContent='已退出。'})};
+  function srv(task){var t=$('srvAsk').value.trim();if(!t){$('msg').textContent='请先写一句话描述。';return Promise.reject()}$('msg').textContent='服务器 AI 思考中（最多约 1 分钟）…';
+    return fetch('/api/ai',{method:'POST',headers:{'content-type':'application/json','x-requested-with':'design'},body:JSON.stringify({task:task,text:t})}).then(function(r){return r.json().then(function(j){if(!r.ok)throw new Error(j.error||r.status);return j.text})})}
+  $('srvPal').onclick=function(){srv('palette').then(function(tx){var c=JSON.parse(tx.match(/\[[^\]]+\]/)[0]);push();$('b1').value=c[0];$('b2').value=c[1];if(sel)sel.color=c[2];render();$('msg').textContent='已套用 AI 配色：'+c.join('、')}).catch(function(e){if(e)$('msg').textContent='AI 失败：'+e.message})};
+  $('srvCopy').onclick=function(){srv('copy').then(function(tx){var ls=tx.split('\n').filter(Boolean).slice(0,3);push();ls.forEach(function(l,i){mk('text',{text:l.replace(/^[\d\.\-\s]+/,''),x:W/2,y:H*(.3+i*.2),size:W*.16,color:'#14233a',fw:800})});render();$('msg').textContent='已加入 3 条标题，可拖动修改。'}).catch(function(e){if(e)$('msg').textContent='AI 失败：'+e.message})};
+  $('rnd').click();
+})();
+</script>
+</body>
+</html>

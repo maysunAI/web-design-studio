@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="zh" data-theme="t07" data-bg="none">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>网页设计库</title>
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/themes.css">
+<link rel="stylesheet" href="css/bgs.css">
+<link rel="stylesheet" href="css/layout.css">
+<link rel="stylesheet" href="css/motion.css">
+<style>
+ .tabs{display:flex;gap:8px;flex-wrap:wrap;position:sticky;top:0;z-index:9;background:var(--bg);padding:10px 0;border-bottom:1px solid var(--line)}
+ .tabs a{padding:10px 18px;border-radius:999px;border:1px solid var(--line);text-decoration:none;color:var(--text);background:var(--surface);min-height:44px;display:inline-flex;align-items:center}
+ .sw{display:flex;height:34px;border-radius:8px;overflow:hidden;border:1px solid var(--line);margin-bottom:8px}.sw i{flex:1}
+ .no{font-weight:800;font-size:1.3rem}.k{font-size:.78rem;padding:2px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}.k.use{background:var(--surface-2)}
+ .thumb{aspect-ratio:16/9;border-radius:8px;background-size:cover;background-position:center;border:1px solid var(--line);margin-bottom:8px}
+ .card button.pick{all:unset;cursor:pointer;display:block;width:100%}
+ .now{position:sticky;top:64px;z-index:8}.now .card{display:flex;gap:14px;align-items:center;flex-wrap:wrap;padding:12px 18px}
+ h3.grp{margin:1.2em 0 .5em}
+ .now .card{padding:6px 14px!important;gap:10px!important;font-size:.92rem}.now .btn{min-height:34px;padding:4px 12px}
+ .hero-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(260px,420px);gap:24px;align-items:center}
+ .demo-win{position:relative;aspect-ratio:16/10;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:var(--surface)}
+ .demo-win iframe{position:absolute;left:0;top:0;width:1280px;height:800px;border:0;transform-origin:0 0;pointer-events:none}
+ .demo-win span{position:absolute;right:8px;bottom:6px;font-size:.75rem;padding:2px 8px;border-radius:999px;background:rgba(0,0,0,.6);color:#fff}
+ .tcard{padding:8px!important}.tcard .tv{position:relative;aspect-ratio:16/10;border-radius:8px;overflow:hidden;border:1px solid var(--line);margin-bottom:6px;background:var(--surface-2)}
+ .tcard iframe{position:absolute;left:0;top:0;width:1280px;height:800px;border:0;transform-origin:0 0;pointer-events:none}
+ .lv canvas{width:100%;aspect-ratio:16/9;border-radius:8px;display:block;margin-bottom:6px;background:#000}
+ @media(max-width:860px){.hero-grid{grid-template-columns:minmax(0,1fr)}}
+ .hero-s{background:linear-gradient(160deg,var(--hero-from),var(--hero-to));position:relative;isolation:isolate;overflow:hidden}.hero-s::before{content:"";position:absolute;inset:0;background:var(--bg-img) center/cover;opacity:.85;z-index:-1}
+</style>
+</head>
+<body data-no-switcher>
+<header class="hero-s"><div class="wrap section hero-grid"><div>
+  <h1 style="font-size:clamp(1.6rem,3vw,2.2rem);margin:0">网页设计库</h1>
+  <p class="lead muted" style="font-size:var(--fs-lg);max-width:40em">29 个主题 · 35 张背景 · 4 个动态背景 · 12 个页面模板。点任意主题/背景，本页立刻换；右边小窗每隔几秒自动换一个模板和主题。</p>
+  <div class="cta" style="display:flex;gap:10px;flex-wrap:wrap"><a class="btn primary" href="maker.html">🎨 做图工作台</a><a class="btn" href="md.html?f=ANALYSIS.md">现有网站分析</a><a class="btn" href="md.html?f=RESEARCH.md">同行调研</a></div></div><div class="demo-win"><iframe id="demoF" title="模板演示" tabindex="-1"></iframe><span id="demoCap"></span></div>
+</div></header>
+<div class="wrap">
+ <nav class="tabs" aria-label="分区"><a href="#themes">主题 29</a><a href="#bgs">背景 35</a><a href="#live">动态背景 4</a><a href="#tpls">模板 12</a><a href="#links">找灵感</a><a href="maker.html">做图工作台</a></nav>
+ <div class="now"><div class="card"><b>当前选择：</b><span id="now">主题 07 · 背景 无</span><a class="btn primary" id="open" href="templates/01_meeting.html">用当前选择看模板 01 →</a><button class="btn" id="copy">复制选择</button><label style="display:inline-flex;gap:6px;align-items:center"><input type="checkbox" id="scope" checked> 同时用于所有模板页（浏览器记住）</label><button class="btn" id="reset" type="button">恢复默认</button></div></div>
+
+ <section class="section" id="howto"><h2>怎么用：3 步（例子）</h2>
+  <div class="grid g4"><article class="card"><span class="no">1</span> <b>选主题</b><div class="muted">下面「主题」里点一个，比如 12。上面的“当前选择”和整页颜色立刻变。</div></article>
+  <article class="card"><span class="no">2</span> <b>选背景</b><div class="muted">「背景」或「动态背景」里点一个，比如 07，或下雨。</div></article>
+  <article class="card"><span class="no">3</span> <b>点模板</b><div class="muted">「页面模板」里点一张卡，进去就是带着你选的主题+背景的完整页面。</div></article>
+  <article class="card"><span class="no">✓</span> <b>告诉我</b><div class="muted">点“复制选择”，会得到「用主题 12 + 背景 07」，发给我，我就按它做你的页面。</div></article></div></section>
+ <section class="section" id="themes"><h2>主题（颜色）</h2>
+  <p class="sub">直接用＝自配色可上线；参考＝借鉴风格、重新取色。对比度已自动校验。</p><div id="tg"></div></section>
+ <section class="section" id="bgs"><h2>背景图（PC 宽屏 1920×1080，SVG 几 KB）</h2>
+  <p class="sub">全部是程序原创生成，无版权问题。"参考风格"是学习 Weave / Vizcom / Hunar / GANNI 的气质自己重画的。</p><div id="bg"></div></section>
+ <section class="section" id="live"><h2>动态背景（会动的）</h2>
+  <p class="sub">点一个，整页背景就变成它（再点“关闭”恢复）；模板页也会带上。系统开了“减少动态效果”时只显示静止画面。</p>
+  <div class="grid g4" id="lv"></div>
+  <h3 class="grp">用自己的照片做背景</h3>
+  <div class="card"><input type="file" id="upl" accept="image/*"> <button class="btn" id="uplClear" type="button">去掉我的照片</button>
+  <p class="muted" style="margin:.4em 0 0;font-size:.9rem">照片只在你的浏览器里处理（缩到 1920 宽并稍微压暗，保证上面的字看得清），不会上传到服务器；换电脑要重新选。</p></div>
+ </section>
+ <section class="section" id="tpls"><h2>页面模板（电脑多栏 + 左侧菜单 + 动效）</h2>
+  <p class="sub">点开后右下角有 🎨 按钮，可以随时换主题和背景。动效：滚动出现、漂浮、滚动条、闪光字、悬停抬起（系统开了"减少动态效果"会自动关掉）。</p><div class="grid g4" id="tp"></div></section>
+ <section class="section" id="links"><h2>找灵感：网页设计网址（去逛，挑你喜欢的，把链接或截图给我）</h2>
+  <p class="sub">我逐个检查过这些网址存在（2026-10-06）。个别站对机器人返回 403/429，用你的浏览器打开是正常的。挑好后告诉我"我喜欢这个"+链接，我来分析并做进模板。</p><div id="lk"></div></section>
+ <footer class="footer">PJ116 · 全部原创生成 · 生成器见 tools/</footer>
+</div>
+<script src="js/catalog.js"></script><script src="js/templates.js"></script><script src="js/livebg.js"></script><script src="js/studio.js"></script>
+<script>
+(function(){
+  var C=window.PJ116,de=document.documentElement,sel={t:7,b:'none'};
+  function pad(n){return (n<10?'0':'')+n}
+  function upd(){
+    de.dataset.theme='t'+pad(sel.t); de.dataset.bg=sel.b==='none'?'none':pad(sel.b);
+    var tn=C.themes[sel.t-1].name,bn=sel.b==='none'?'无':C.bgs[sel.b-1].name;
+    document.getElementById('now').textContent='主题 '+pad(sel.t)+'「'+tn+'」 · 背景 '+(sel.b==='none'?'无':pad(sel.b)+'「'+bn+'」');
+    var q='?theme='+sel.t+(sel.b==='none'?'&bg=none':'&bg='+sel.b);
+    document.querySelectorAll('#tp a').forEach(function(a){a.href=a.dataset.f+q});
+    document.getElementById('open').href='templates/01_meeting.html'+q;
+    if(document.getElementById('scope').checked){window.PJ116apply.setTheme(sel.t);window.PJ116apply.setBg(sel.b==='none'?'none':sel.b)}
+    window.__q=q; clearTimeout(window.__tt); window.__tt=setTimeout(loadThumbs,250);
+  }
+  function group(list,box,render){
+    var g={};list.forEach(function(x){(g[x.group]=g[x.group]||[]).push(x)});
+    Object.keys(g).forEach(function(k){var h=document.createElement('h3');h.className='grp';h.textContent=k;box.appendChild(h);
+      var d=document.createElement('div');d.className='grid g4';g[k].forEach(function(x){d.appendChild(render(x))});box.appendChild(d)});
+  }
+  group(C.themes,document.getElementById('tg'),function(x){
+    var c=document.createElement('article');c.className='card lift';
+    c.innerHTML='<button class="pick" type="button"><div class="sw"><i style="background:'+x.bg+'"></i><i style="background:'+x.surface+'"></i><i style="background:'+x.text+'"></i><i style="background:'+x.brand+'"></i><i style="background:'+x.accent+'"></i></div><span class="no">'+pad(x.n)+'</span> <b>'+x.name+'</b> <span class="k '+(x.kind==='用'?'use':'')+'">'+(x.kind==='用'?'直接用':'参考')+'</span><div class="muted" style="font-size:.9rem">'+x.note+'</div></button>';
+    c.querySelector('button').onclick=function(){sel.t=x.n;upd()};return c});
+  group(C.bgs,document.getElementById('bg'),function(x){
+    var c=document.createElement('article');c.className='card lift';
+    c.innerHTML='<button class="pick" type="button"><div class="thumb" style="background-image:url('+x.file+')"></div><span class="no">'+pad(x.n)+'</span> <b>'+x.name+'</b> <span class="k '+(x.kind==='用'?'use':'')+'">'+(x.kind==='用'?'直接用':'参考风格')+'</span><div class="muted" style="font-size:.9rem">'+x.note+' · <a href="'+x.file+'" download>下载 SVG</a></div></button>';
+    c.querySelector('button').onclick=function(e){if(e.target.tagName==='A')return;sel.b=x.n;upd()};return c});
+  var tp=document.getElementById('tp');
+  window.PJ116T.forEach(function(x){var a=document.createElement('a');a.className='card lift tcard';a.style.textDecoration='none';a.style.color='var(--text)';a.dataset.f=x.file;a.href=x.file;a.innerHTML='<div class="tv"><iframe tabindex="-1" title="'+x.name+'" data-src="'+x.file+'"></iframe></div><span class="no">'+pad(x.n)+'</span> <b>'+x.name+'</b>';tp.appendChild(a)});
+  document.getElementById('copy').onclick=function(){var s='用主题 '+pad(sel.t)+' + 背景 '+(sel.b==='none'?'无':pad(sel.b));try{navigator.clipboard.writeText(s)}catch(e){}this.textContent='已复制：'+s};
+  var LK={'获奖/高端设计（看构图和动效）':[['Awwwards','awwwards.com','网页设计奖，行业标杆'],['Godly','godly.website','现代 UI、AI 和 SaaS'],['The FWA','thefwa.com','创意/动效强的获奖站'],['CSS Design Awards','cssdesignawards.com','按设计/创新/代码评分'],['Siteinspire','siteinspire.com','精选网页，可按风格筛'],['Httpster','httpster.net','大胆个性的网页'],['Minimal Gallery','minimal.gallery','极简风格'],['Curated','curated.design','策展，分类清楚']],
+   '落地页/产品页（可按行业、颜色筛）':[['Land-book','land-book.com','落地页图库，可按颜色/行业筛'],['Lapa Ninja','lapa.ninja','落地页，量大'],['SaaS Landing Page','saaslandingpage.com','SaaS 落地页'],['One Page Love','onepagelove.com','单页网站'],['Bento Grids','bentogrids.com','便当格布局合集'],['Refero','refero.design','真实产品的页面与流程截图']],
+   '应用界面/交互（App 和后台长什么样）':[['Mobbin','mobbin.com','真实 App 界面库'],['Page Flows','pageflows.com','用户流程录屏'],['Screenlane','screenlane.com','App 界面灵感'],['Collect UI','collectui.com','按组件分类(登录/定价/仪表盘…)'],['Dribbble','dribbble.com','设计师作品'],['Behance','behance.net','设计项目集'],['Muzli','muz.li','每日设计灵感'],['Designspiration','designspiration.com','图片灵感板']],
+   '卖/买设计和模板的平台（买来直接下载用；也可当灵感）':[['Gumroad','gumroad.com','创作者直接卖模板/素材/电子书，买完下载文件（不是定制开发）'],['Creative Market','creativemarket.com','设计素材/网页模板市场'],['ThemeForest','themeforest.net','网站模板市场（Envato），买完得到源码'],['Framer Marketplace','framer.com/marketplace','Framer 网页模板，买来改字就上线'],['Webflow Templates','webflow.com/templates','Webflow 模板市场'],['Notion 模板市场','notion.com/templates','Notion 模板']],
+   '素材：照片/插画/背景（免费可商用，用前看各站授权说明）':[['Unsplash','unsplash.com','高质量照片'],['Pexels','pexels.com','照片+视频'],['Pixabay','pixabay.com','照片/插画/矢量'],['unDraw','undraw.co','可改色插画'],['DrawKit','drawkit.com','手绘插画'],['Storyset','storyset.com','动画插画'],['Open Peeps','openpeeps.com','手绘人物组合'],['3dicons','3dicons.co','3D 图标'],['Haikei','haikei.app','生成 SVG 背景/波浪'],['SVG Backgrounds','svgbackgrounds.com','SVG 背景图'],['Shape Divider','shapedivider.app','分隔波浪/形状']],
+   '配色/字体/图标':[['Coolors','coolors.co','配色生成器'],['Color Hunt','colorhunt.co','配色集'],['UI Colors','uicolors.app','由一个颜色生成整套色阶'],['Gradient Hunt','gradienthunt.com','渐变色集'],['Google Fonts','fonts.google.com','免费字体'],['Lucide','lucide.dev','线条图标'],['Heroicons','heroicons.com','Tailwind 官方图标'],['Iconify','iconify.design','20 万+图标']],
+   '现成模板/组件代码':[['HyperUI','hyperui.dev','复制即用的 Tailwind 组件'],['Flowbite','flowbite.com','组件库+模板'],['DaisyUI','daisyui.com','Tailwind 组件主题'],['shadcn/ui','ui.shadcn.com','React 组件'],['Magic UI','magicui.design','动效组件'],['Aceternity UI','ui.aceternity.com','炫酷动效组件'],['Uiverse','uiverse.io','按钮/卡片等小组件'],['ThemeWagon','themewagon.com','免费网页模板'],['HTML5 UP','html5up.net','响应式 HTML 模板'],['Start Bootstrap','startbootstrap.com','Bootstrap 模板']]};
+  var lk=document.getElementById('lk');Object.keys(LK).forEach(function(k){var h=document.createElement('h3');h.className='grp';h.textContent=k;lk.appendChild(h);var d=document.createElement('div');d.className='grid g4';
+    LK[k].forEach(function(x){var a=document.createElement('a');a.className='card lift';a.style.textDecoration='none';a.style.color='var(--text)';a.href='https://'+x[1]+'/';a.target='_blank';a.rel='noopener';a.innerHTML='<b>'+x[0]+' ↗</b><div class="muted" style="font-size:.9rem">'+x[2]+'</div><div class="muted" style="font-size:.78rem">'+x[1]+'</div>';d.appendChild(a)});lk.appendChild(d)});
+  function fit(box){var f=box.querySelector('iframe');if(f)f.style.transform='scale('+(box.clientWidth/1280)+')'}
+  function loadThumbs(){document.querySelectorAll('#tp .tv').forEach(function(b){var f=b.querySelector('iframe');f.src=f.dataset.src+(window.__q||'')+(window.__q?'&':'?')+'nosw=1';fit(b)})}
+  window.addEventListener('resize',function(){document.querySelectorAll('#tp .tv,.demo-win').forEach(fit)});
+  // 动态背景卡片
+  var LVN={sky:'蓝天白云（云在飘）',rain:'下雨（地上有水花）',sea:'大海（海浪在动）',snow:'大雪（风吹枯树）'},lv=document.getElementById('lv');
+  C&&window.PJ116live.kinds.forEach(function(k){var d=document.createElement('article');d.className='card lift lv';d.innerHTML='<canvas></canvas><b>'+LVN[k]+'</b><div style="margin-top:6px"><button class="btn primary" type="button">用作整页背景</button> <button class="btn" type="button">关闭</button></div>';lv.appendChild(d);
+    window.PJ116live.mount(d.querySelector('canvas'),k);var bs=d.querySelectorAll('button');bs[0].onclick=function(){window.PJ116live.set(k);bs[0].textContent='已应用 ✓'};bs[1].onclick=function(){window.PJ116live.set('none')}});
+  // 上传照片 -> 压缩+压暗 -> 当作背景（存 localStorage，模板页自动用）
+  document.getElementById('upl').onchange=function(e){var f=e.target.files[0];if(!f)return;var im=new Image();im.onload=function(){var w=Math.min(1920,im.width),h=Math.round(im.height*w/im.width),c=document.createElement('canvas');c.width=w;c.height=h;var x=c.getContext('2d');x.drawImage(im,0,0,w,h);x.fillStyle='rgba(0,0,0,.28)';x.fillRect(0,0,w,h);var u=c.toDataURL('image/jpeg',.82);try{localStorage.setItem('pj116-userbg',u)}catch(er){alert('照片太大，浏览器存不下，换一张小点的');return}window.PJ116apply.setUserBg(u)};im.src=URL.createObjectURL(f)};
+  document.getElementById('uplClear').onclick=function(){window.PJ116apply.setUserBg(null)};
+  // 右上小窗：每 6 秒换一个模板+主题
+  var dn=0,df=document.getElementById('demoF'),dc=document.getElementById('demoCap'),dbox=df.parentNode;
+  function demo(){var t=window.PJ116T[dn%window.PJ116T.length],th=1+Math.floor(Math.random()*C.themes.length);df.src=t.file+'?theme='+th+'&bg='+(1+Math.floor(Math.random()*C.bgs.length))+'&nosw=1';dc.textContent=t.name+' · 主题 '+th;fit(dbox);dn++}
+  demo();setInterval(demo,6000);
+  document.getElementById('reset').onclick=function(){try{['theme','bg','live','userbg'].forEach(function(k){localStorage.removeItem('pj116-'+k)})}catch(e){}window.PJ116apply.setUserBg(null);if(window.PJ116live)window.PJ116live.set('none');sel.t=7;sel.b='none';upd();this.textContent='已恢复默认 ✓'};
+  upd();
+})();
+</script>
+</body>
+</html>

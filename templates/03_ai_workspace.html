@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="zh" data-default-bg="17" data-default-theme="t08">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI 工作台（左菜单+对话+右侧栏）</title>
+<link rel="stylesheet" href="../css/tokens.css">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/bgs.css">
+<link rel="stylesheet" href="../css/layout.css">
+<link rel="stylesheet" href="../css/motion.css">
+</head>
+<body>
+<a class="skip" href="#main">跳到正文</a>
+<div class="shell three">
+<nav class="side" aria-label="主菜单"><a class="brand" href="#">✨ Workspace</a><h4>对话</h4><a class="mi" href="#" aria-current="page">💬 新对话</a><a class="mi" href="#">🕘 历史</a><h4>工具</h4><a class="mi" href="#">📄 文档</a><a class="mi" href="#">🧩 模板</a><a class="mi" href="#">⚙️ 设置</a></nav>
+<main class="main ws" id="main">
+ <h1 style="margin-top:0">今天想做什么？</h1>
+ <div class="chips" data-reveal><span class="chip on">写文案</span><span class="chip">总结文档</span><span class="chip">翻译</span><span class="chip">画图</span></div>
+ <div class="chat" style="margin-top:20px">
+  <div class="msg me" data-reveal="right">帮我把这份会议纪要整理成三条待办。</div>
+  <div class="msg" data-reveal="left">好的。我读完了，整理如下：<br>1. 周五前交报价<br>2. 下周一排会议室<br>3. 联系日方确认时间</div>
+ </div>
+ <div class="composer"><input aria-label="输入消息" placeholder="输入你的问题…"><button class="btn primary">发送</button></div>
+</main>
+<aside class="rail"><h3 style="margin-top:0">上下文</h3><div class="card" data-reveal><b>会议纪要.docx</b><p class="muted">3 页 · 已读取</p></div><div class="card" data-reveal data-delay="1" style="margin-top:12px"><b>用量</b><div class="grow-bar" style="--v:38%;margin-top:8px"><i></i></div><p class="muted">本月 38%</p></div></aside>
+</div>
+<script src="../js/catalog.js"></script>
+<script src="../js/studio.js"></script>
+</body>
+</html>

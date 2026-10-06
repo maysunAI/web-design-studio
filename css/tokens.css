@@ -1,0 +1,13 @@
+/* PJ116 基础令牌（颜色在 themes.css，背景图在 bgs.css）。不选主题时默认 t01 的值。 */
+:root {
+  --bg:#f4f7fb; --surface:#fff; --surface-2:#eaeff6; --text:#14233a; --muted:#4a5d78; --line:#d3deec;
+  --brand:#1f6feb; --brand-text:#1f6feb; --brand-ink:#fff; --accent:#12a594;
+  --hero-from:#d9e6fb; --hero-to:#f4f7fb; --bg-img:none;
+  --radius:14px; --radius-sm:8px;
+  --shadow:0 1px 2px rgba(0,0,0,.06), 0 8px 24px rgba(20,35,58,.08);
+  --font:system-ui,-apple-system,"Segoe UI","Hiragino Sans","Noto Sans CJK SC","Microsoft YaHei",sans-serif;
+  /* 密度档位：想给不同人群换密度，只改这几个变量 */
+  --fs-base:1rem; --fs-lg:1.25rem; --fs-hero:clamp(2.2rem,5.2vw,4.6rem);
+  --gap:clamp(14px,1.8vw,28px);
+  --maxw:1560px; /* 电脑端用满宽，不再是手机那样中间一条 */
+}

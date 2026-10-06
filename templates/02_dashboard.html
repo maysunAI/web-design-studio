@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="zh" data-default-bg="16" data-default-theme="t07">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>工具后台（左侧菜单）</title>
+<link rel="stylesheet" href="../css/tokens.css">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/bgs.css">
+<link rel="stylesheet" href="../css/layout.css">
+<link rel="stylesheet" href="../css/motion.css">
+</head>
+<body>
+<a class="skip" href="#main">跳到正文</a>
+<div class="shell">
+<nav class="side" aria-label="主菜单"><a class="brand" href="#">⚙️ ToolBox</a><h4>工作区</h4><a class="mi" href="#" aria-current="page">📊 概览</a><a class="mi" href="#">🗂️ 项目</a><a class="mi" href="#">📈 报表</a><h4>管理</h4><a class="mi" href="#">👥 成员</a><a class="mi" href="#">⚙️ 设置</a></nav>
+<main class="main" id="main">
+ <h1 style="margin-top:0">概览</h1>
+ <div class="grid g4">
+  <div class="card" data-reveal><div class="muted">今日访问</div><div class="stat">1,284</div><div class="grow-bar" style="--v:72%"><i></i></div></div>
+  <div class="card" data-reveal data-delay="1"><div class="muted">新用户</div><div class="stat">86</div><div class="grow-bar" style="--v:45%"><i></i></div></div>
+  <div class="card" data-reveal data-delay="2"><div class="muted">错误率</div><div class="stat">0.4%</div><div class="grow-bar" style="--v:8%"><i></i></div></div>
+  <div class="card" data-reveal data-delay="3"><div class="muted">响应时间</div><div class="stat">182 ms</div><div class="grow-bar" style="--v:30%"><i></i></div></div>
+ </div>
+ <section class="section"><div class="grid g2">
+  <div class="card" data-reveal><h3>最近活动 <span class="pulse-dot"></span></h3><p class="muted">这里放列表或图表。电脑上两列并排，手机上叠成一列。</p></div>
+  <div class="card" data-reveal data-delay="1"><h3>待办</h3><p class="muted">侧栏在手机上变成顶部横向滚动条。</p></div>
+ </div></section>
+</main></div>
+<script src="../js/catalog.js"></script>
+<script src="../js/studio.js"></script>
+</body>
+</html>

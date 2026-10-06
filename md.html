@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>文档预览</title>
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/themes.css">
+<style>
+ body{margin:0;background:var(--bg);color:var(--text)}
+ .top{display:flex;gap:10px;align-items:center;padding:8px var(--gap);background:var(--surface);border-bottom:1px solid var(--line);position:sticky;top:0}
+ .top a{color:var(--brand);text-decoration:none}
+ #o{max-width:980px;margin:0 auto;padding:16px var(--gap) 60px;line-height:1.75;overflow-wrap:anywhere}
+ #o table{border-collapse:collapse;display:block;overflow-x:auto}#o th,#o td{border:1px solid var(--line);padding:6px 10px}
+ #o pre{background:var(--surface-2);padding:10px;border-radius:8px;overflow-x:auto}#o code{background:var(--surface-2);padding:1px 5px;border-radius:4px}
+ #o img{max-width:100%}
+</style>
+</head>
+<body>
+<div class="top"><a href="index.html">← 设计库</a><b id="t">文档</b></div>
+<article id="o">加载中…</article>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
+<script>
+(function(){
+  var f=(new URLSearchParams(location.search)).get('f')||'';
+  if(!/^[A-Za-z0-9_\-]+\.md$/.test(f)){document.getElementById('o').textContent='文件名不合法';return}
+  document.getElementById('t').textContent=f;document.title=f;
+  fetch(f).then(function(r){if(!r.ok)throw 0;return r.arrayBuffer()}).then(function(b){
+    var txt=new TextDecoder('utf-8').decode(b);
+    document.getElementById('o').innerHTML=window.marked?marked.parse(txt):'';
+    if(!window.marked)document.getElementById('o').textContent=txt;
+  }).catch(function(){document.getElementById('o').textContent='读取失败'});
+})();
+</script>
+</body>
+</html>
